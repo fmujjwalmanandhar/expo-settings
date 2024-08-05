@@ -10,10 +10,25 @@ public class ExpoSettingsModule: Module {
     // The module will be accessible from `requireNativeModule('ExpoSettings')` in JavaScript.
     Name("ExpoSettings")
 
+    Events("onChangeTheme")
+
+    Function("setTheme"){ (theme: Theme) -> Void in
+      UserDefaults.standard.set(theme.rawValue, forKey:"theme")
+      /*** sendEvent(eventName, payload) function is defined in the module instance to send the actual event with some payload ***/
+      sendEvent("onChangeTheme",[
+        "theme":theme.rawValue
+      ])
+    }
     
     // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
     Function("getTheme") { ()-> String in
-       "system"
+      UserDefaults.standard.string(forKey:"theme") ?? Theme.system.rawValue
     }
   }
+
+    enum Theme: String, Enumerable{
+      case light
+      case dark
+      case system 
+    }
 }
